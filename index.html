@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Murder at Silverwood Manor</title>
+<style>
+    body {
+        background: #111;
+        color: #eee;
+        font-family: Arial;
+        text-align: center;
+        padding: 20px;
+    }
+    #game {
+        max-width: 700px;
+        margin: auto;
+        background: #222;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    button {
+        margin: 5px;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background: #444;
+        color: white;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #666;
+    }
+    .laugh {
+        animation: shake 0.3s;
+    }
+    @keyframes shake {
+        0% {transform: translateX(0);}
+        25% {transform: translateX(-3px);}
+        50% {transform: translateX(3px);}
+        75% {transform: translateX(-3px);}
+        100% {transform: translateX(0);}
+    }
+</style>
+</head>
+<body>
+
+<div id="game">
+    <h1>🕵️ Murder at Silverwood Manor</h1>
+    <p id="story"></p>
+    <div id="choices"></div>
+</div>
+
+<script>
+let clues = [];
+let step = 0;
+
+const story = document.getElementById("story");
+const choices = document.getElementById("choices");
+
+function show(text, options) {
+    story.innerText = text;
+    choices.innerHTML = "";
+    options.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.innerText = opt.text;
+        btn.onclick = () => {
+            btn.classList.add("laugh"); // fun effect
+            setTimeout(opt.action, 200);
+        };
+        choices.appendChild(btn);
+    });
+}
+
+// START GAME
+function startGame() {
+    show(
+        "A storm rages outside Silverwood Manor. Mr. Grey is dead. Three suspects remain.",
+        [
+            {text: "Question Ms. Berry 🍓", action: questionBerry},
+            {text: "Question Mr. Hollow 🎩", action: questionHollow},
+            {text: "Question Dr. Vale 📚", action: questionVale},
+            {text: "Inspect the body", action: inspectBody},
+            {text: "Inspect the glass", action: inspectGlass},
+            {text: "Check red stain", action: inspectStain},
+            {text: "Accuse someone", action: accuse}
+        ]
+    );
+}
+
+// SUSPECTS
+function questionBerry() {
+    show(
+        "Ms. Berry smiles nervously. 'I only served dessert… I swear!'",
+        [
+            {text: "Ask about dessert", action: () => {
+                clues.push("poison");
+                show("She admits she made almond tart… You smell almonds.", back);
+            }},
+            {text: "Return", action: startGame}
+        ]
+    );
+}
+
+function questionHollow() {
+    show(
+        "Mr. Hollow stands stiff. 'I was making tea.'",
+        [
+            {text: "Check alibi", action: () => {
+                clues.push("lie");
+                show("The kettle is cold… he lied.", back);
+            }},
+            {text: "Return", action: startGame}
+        ]
+    );
+}
+
+function questionVale() {
+    show(
+        "Dr. Vale adjusts glasses. 'We argued, yes. But I didn't kill him.'",
+        [
+            {text: "Ask about argument", action: () => {
+                clues.push("motive");
+                show("He wanted a rare artifact Mr. Grey refused to sell.", back);
+            }},
+            {text: "Return", action: startGame}
+        ]
+    );
+}
+
+// CLUES
+function inspectBody() {
+    show(
+        "No wounds. Bitter almond smell… poison likely.",
+        [
+            {text: "Return", action: startGame}
+        ]
+    );
+}
+
+function inspectGlass() {
+    show(
+        "The glass has residue. Someone tampered with the drink.",
+        [
+            {text: "Return", action: startGame}
+        ]
+    );
+}
+
+function inspectStain() {
+    show(
+        "The red stain… berry sauce.",
+        [
+            {text: "Return", action: startGame}
+        ]
+    );
+}
+
+// ACCUSATION
+function accuse() {
+    show(
+        "Who is the killer?",
+        [
+            {text: "Ms. Berry 🍓", action: () => endGame("berry")},
+            {text: "Mr. Hollow 🎩", action: () => endGame("hollow")},
+            {text: "Dr. Vale 📚", action: () => endGame("vale")}
+        ]
+    );
+}
+
+// ENDINGS
+function endGame(choice) {
+    if (choice === "berry") {
+        show(
+            "Ms. Berry breaks down. 'Yes! I poisoned him!' 🎉 You solved the case!",
+            [{text: "Play Again", action: startGame}]
+        );
+    } else {
+        show(
+            "Wrong accusation… The real killer escapes. 💀",
+            [{text: "Try Again", action: startGame}]
+        );
+    }
+}
+
+const back = [{text: "Return", action: startGame}];
+
+startGame();
+</script>
+
+</body>
+</html>
